@@ -8,12 +8,19 @@ written to the disk or not at all – even when the process is unexpectedly inte
 ```go
 package main
 
-import "github.com/robojones/safe-write"
+import (
+    "fmt"
+    "github.com/robojones/safe-write"
+)
 
 func main() {
     data := []byte("{ \"data\": \"some important data\" }")
-    // Write the data to /data/file/asdf-12312124123
-    // When the write is complete, create a hard link from /data/file/asdf to the written file.
-    safe.WriteFile("/data/file/asdf", data)
+    
+    safe.WriteFile("config.json", data)
+
+    got, _ := safe.ReadFile("config.json")
+    fmt.Printf("The data is: %s", string(got))
+    
+    safe.RemoveFile("config.json")
 }
 ```
