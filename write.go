@@ -1,4 +1,4 @@
-// Package safe provides methods to manage configuration files where it is important that they are either completely
+// Package safe provides methods to manage critical files where it is important that they are either completely
 // written to the disk or not at all – even when the process is unexpectedly interrupted or there are concurrent writes.
 package safe
 
@@ -121,10 +121,10 @@ func link(oldname string, newname string) error {
 // write data to a new file described by the name with the provided mode.
 func write(name string, mode os.FileMode, data []byte) error {
 	f, err := os.Create(name)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
 	if err := f.Chmod(mode); err != nil {
 		return err
