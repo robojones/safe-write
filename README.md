@@ -29,7 +29,7 @@ func main() {
 
 ### TL;DR
 
-The WriteFile method uses hard links an temporary files to ensure that there is always a consistent version of your file on the disk.
+When **overwriting** files, the `WriteFile` method uses hard links an temporary files to ensure that there is always a consistent version of your file on the disk.
 
 ### Complete
 
