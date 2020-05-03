@@ -23,12 +23,8 @@ the original version of the file remains untouched.
 
 How it works
 
-TL;DR
-
-When **overwriting** files, the WriteFile method uses hard links and temporary files to ensure that
+TL;DR: When **overwriting** files, the WriteFile method uses hard links and temporary files to ensure that
 there is always a consistent version of your file on the disk.
-
-Complete
 
 Lets assume we are using the WriteFile method to create a file called config.json.
 The write procedure is as follows.
