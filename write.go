@@ -14,6 +14,12 @@ const AltNamePostfix = ".1"
 // TimestampFormat is the format of the timestamp which is appended to the name of the temporary files.
 const TimestampFormat = ".2006-01-02T15-04-05.000000"
 
+// SleepTime until ReadFile retries to read the files if they don't exist.
+const SleepTime = 10 * time.Millisecond
+
+// DefaultPerm are the permissions used to create files with WriteFile.
+const DefaultPerm = 0700
+
 // RemoveFile deletes the file with the name or $(name).1
 // NotExist errors are ignored.
 func RemoveFile(name string) error {
@@ -51,6 +57,8 @@ func ReadFile(name string) ([]byte, error) {
 		if !os.IsNotExist(err) {
 			return data, err
 		}
+
+		time.Sleep(SleepTime)
 	}
 
 	return data, err
@@ -60,19 +68,12 @@ func ReadFile(name string) ([]byte, error) {
 // This method also creates a temporary file which is deleted immediately after the write is complete.
 // It also creates a file $(name).1 which is used to make the write concurrency and interrupt safe.
 func WriteFile(name string, data []byte) error {
-	return WriteFilePerm(name, 0600, data)
-}
-
-// WriteFilePerm writes data to a file with the provided name and permissions.
-// This method also creates a temporary file which is deleted immediately after the write is complete.
-// It also creates a file $(name).1 which is used to make the write concurrency and interrupt safe.
-func WriteFilePerm(name string, perm os.FileMode, data []byte) error {
 	t := time.Now()
 
 	tmp := name + t.Format(TimestampFormat)
 	alt := name + AltNamePostfix
 
-	err := write(tmp, perm, data)
+	err := write(tmp, data)
 	defer os.Remove(tmp)
 	if err != nil {
 		return err
@@ -119,17 +120,16 @@ func link(oldname string, newname string) error {
 }
 
 // write data to a new file described by the name with the provided mode.
-func write(name string, mode os.FileMode, data []byte) error {
+func write(name string, data []byte) error {
 	f, err := os.Create(name)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	if err := f.Chmod(mode); err != nil {
+	if err := f.Chmod(DefaultPerm); err != nil {
 		return err
 	}
-
 	if _, err := f.Write(data); err != nil {
 		return err
 	}
