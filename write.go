@@ -1,5 +1,3 @@
-// Package safe provides methods to manage critical files where it is important that they are either completely
-// written to the disk or not at all – even when the process is unexpectedly interrupted.
 package safe
 
 import (
