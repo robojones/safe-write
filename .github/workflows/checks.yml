@@ -1,0 +1,18 @@
+name: Checks
+on: [push]
+jobs:
+  unit-test:
+    name: "Unit tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.14
+
+      - uses: actions/checkout@master
+
+      - run: go mod download
+
+      - run: go vet
+
+      - run: go test -v ./...
