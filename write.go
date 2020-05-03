@@ -1,5 +1,5 @@
 // Package safe provides methods to manage critical files where it is important that they are either completely
-// written to the disk or not at all – even when the process is unexpectedly interrupted or there are concurrent writes.
+// written to the disk or not at all – even when the process is unexpectedly interrupted.
 package safe
 
 import (
@@ -65,8 +65,9 @@ func ReadFile(name string) ([]byte, error) {
 }
 
 // WriteFile writes data to a file with the provided name.
+// If possible, this method should not be executed concurrently for the same file.
 // This method also creates a temporary file which is deleted immediately after the write is complete.
-// It also creates a file $(name).1 which is used to make the write concurrency and interrupt safe.
+// It also creates a file $(name).1 which is used to make the write/update interrupt safe.
 func WriteFile(name string, data []byte) error {
 	t := time.Now()
 
@@ -102,7 +103,6 @@ func safelink(tmpname string, altname string, name string) error {
 }
 
 // link the oldname to the newname.
-// This method should be concurrency safe.
 func link(oldname string, newname string) error {
 	err := os.Remove(newname)
 	// Ignore NotExist errors in case this is the first time the link is created.
